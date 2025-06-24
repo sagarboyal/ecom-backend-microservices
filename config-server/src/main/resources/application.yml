@@ -1,6 +1,13 @@
 spring:
   application:
     name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:\MicroServices\ecom-microservices\config-server\src\main\resources\config
 
 server:
   port: ${SERVER_PORT}
