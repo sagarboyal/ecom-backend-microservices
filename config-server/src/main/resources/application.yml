@@ -13,11 +13,12 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:guest}
     password: ${RABBITMQ_PASS:guest}
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: ${ENDPOINT_EXPOSER:health,info}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINT_EXPOSER:health,info}
 
 
 server:
