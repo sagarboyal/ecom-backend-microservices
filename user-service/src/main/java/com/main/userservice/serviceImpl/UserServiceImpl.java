@@ -2,6 +2,8 @@ package com.main.userservice.serviceImpl;
 
 import com.main.userservice.exceptions.custom.ResourceNotFoundException;
 import com.main.userservice.model.Address;
+import com.main.userservice.model.Role;
+import com.main.userservice.model.Roles;
 import com.main.userservice.model.User;
 import com.main.userservice.payload.request.UserRequest;
 import com.main.userservice.payload.response.AddressResponse;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
-        User user = userRepository.save(modelMapper.map(userRequest, User.class));
+        User user = modelMapper.map(userRequest, User.class);
+        user.setRoles(Set.of(new Role(Roles.ROLE_USER)));
+        user = userRepository.save(user);
         return convertToUserResponse(user);
 
     }
