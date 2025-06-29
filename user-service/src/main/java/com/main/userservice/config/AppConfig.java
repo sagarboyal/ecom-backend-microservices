@@ -5,6 +5,7 @@ import com.main.userservice.model.Roles;
 import com.main.userservice.model.User;
 import com.main.userservice.repository.RoleRepository;
 import com.main.userservice.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Set;
 
+@Slf4j
 @Configuration
 public class AppConfig {
     @Bean
@@ -41,31 +43,28 @@ public class AppConfig {
             Set<Role> sellerRoles = Set.of(roleSeller, roleUser);
             Set<Role> userRoles = Set.of(roleUser);
 
+
             if (!userRepository.existsByEmail("admin@gmail.com")) {
+                log.info("Creating default admin : admin@gmail.com");
                 User admin = new User("admin", "admin@gmail.com", "admin");
+                userRepository.save(admin);
+                admin.setRoles(adminRoles);
                 userRepository.save(admin);
             }
             if (!userRepository.existsByEmail("seller@gmail.com")) {
-                User admin = new User("seller", "seller@gmail.com", "seller");
-                userRepository.save(admin);
+                log.info("Creating default seller : seller@gmail.com");
+                User seller = new User("seller", "seller@gmail.com", "seller");
+                userRepository.save(seller);
+                seller.setRoles(sellerRoles);
+                userRepository.save(seller);
             }
             if (!userRepository.existsByEmail("user@gmail.com")) {
-                User admin = new User("user", "user@gmail.com", "user");
-                userRepository.save(admin);
-            }
-
-            userRepository.findByEmail("admin@gmail.com").ifPresent(admin -> {
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
-            });
-            userRepository.findByEmail("seller@gmail.com").ifPresent(manager -> {
-                manager.setRoles(sellerRoles);
-                userRepository.save(manager);
-            });
-            userRepository.findByEmail("user@gmail.com").ifPresent(user -> {
+                log.info("Creating default user : user@gmail.com");
+                User user = new User("user", "user@gmail.com", "user");
+                userRepository.save(user);
                 user.setRoles(userRoles);
                 userRepository.save(user);
-            });
+            }
         };
     }
 }
