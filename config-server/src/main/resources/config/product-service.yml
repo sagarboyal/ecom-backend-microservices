@@ -10,6 +10,9 @@ spring:
   cloud:
     bus:
       enabled: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
 
 management:
   endpoints:
