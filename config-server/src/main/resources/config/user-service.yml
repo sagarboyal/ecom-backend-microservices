@@ -25,3 +25,10 @@ management:
     web:
       exposure:
         include: ${ENDPOINT_EXPOSER:health,info}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+    register-with-eureka: true
+    fetch-registry: true

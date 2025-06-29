@@ -1,3 +1,6 @@
+server:
+  port: ${SERVER_PORT:8888}
+
 spring:
   application:
     name: config-server
@@ -21,5 +24,10 @@ management:
         include: ${ENDPOINT_EXPOSER:health,info}
 
 
-server:
-  port: ${SERVER_PORT:8888}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+    register-with-eureka: true
+    fetch-registry: true
+
