@@ -26,3 +26,6 @@ eureka:
       defaultZone: ${EUREKA_URL}
     register-with-eureka: true
     fetch-registry: true
+
+project:
+  images: images/
