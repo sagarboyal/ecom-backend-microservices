@@ -26,6 +26,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @GetMapping("/{email}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable String email) {
+        return ResponseEntity.ok(userService.getUserByEmailId(email));
+    }
+
     @GetMapping
     public ResponseEntity<PagedResponse<UserResponse>> getAllUsers(
             @RequestParam(required = false, defaultValue = Constraints.PAGE_NUMBER) Integer pageNumber,

@@ -79,6 +79,12 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public UserResponse getUserByEmailId(String emailId) {
+        return convertToUserResponse(userRepository.findByEmail(emailId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", emailId)));
+    }
+
 
     private UserResponse convertToUserResponse(User user) {
         return UserResponse.builder()

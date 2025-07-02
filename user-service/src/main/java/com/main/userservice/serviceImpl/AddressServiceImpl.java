@@ -4,6 +4,7 @@ import com.main.userservice.exceptions.custom.ResourceNotFoundException;
 import com.main.userservice.model.Address;
 import com.main.userservice.model.User;
 import com.main.userservice.payload.dtos.AddressDTO;
+import com.main.userservice.payload.response.AddressResponse;
 import com.main.userservice.repository.AddressRepository;
 import com.main.userservice.repository.UserRepository;
 import com.main.userservice.service.AddressService;
@@ -38,12 +39,6 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressDTO getAddressList(Long addressId) {
-        return modelMapper.map(addressRepository.findById(addressId)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId)), AddressDTO.class);
-    }
-
-    @Override
     public List<AddressDTO> getUserAddressList(User user) {
         user = validateUser(user.getUserId());
         return user.getAddresses().stream()
@@ -74,6 +69,21 @@ public class AddressServiceImpl implements AddressService {
 
         addressRepository.delete(address);
         return modelMapper.map(address, AddressDTO.class);
+    }
+
+    @Override
+    public AddressResponse getAddressById(Long addressId) {
+        Address address  = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
+        return AddressResponse.builder()
+                .addressId(address.getAddressId())
+                .street(address.getStreet())
+                .building(address.getBuilding())
+                .city(address.getCity())
+                .state(address.getState())
+                .country(address.getCountry())
+                .zipcode(address.getZipcode())
+                .build();
     }
 
     private User validateUser(Long userId) {

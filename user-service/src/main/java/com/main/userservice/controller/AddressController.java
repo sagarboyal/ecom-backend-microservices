@@ -2,6 +2,7 @@ package com.main.userservice.controller;
 
 import com.main.userservice.model.User;
 import com.main.userservice.payload.dtos.AddressDTO;
+import com.main.userservice.payload.response.AddressResponse;
 import com.main.userservice.service.AddressService;
 import com.main.userservice.utils.AuthUtil;
 import jakarta.validation.Valid;
@@ -27,9 +28,9 @@ public class AddressController {
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<AddressDTO> getAddressHandler(@PathVariable Long addressId){
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .body(addressService.getAddressList(addressId));
+    public ResponseEntity<AddressResponse> getAddressHandler(@PathVariable Long addressId){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(addressService.getAddressById(addressId));
     }
 
     @GetMapping("/user")
