@@ -1,0 +1,28 @@
+server:
+  port: ${PORT}
+
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASS:guest}
+  cloud:
+    bus:
+      enabled: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINT_EXPOSER:health,info}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+    register-with-eureka: true
+    fetch-registry: true
