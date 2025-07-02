@@ -99,8 +99,12 @@ public class ProductServiceImpl implements ProductService {
 
         return getPagedResponse(productPage);
     }
-
-
+    @Override
+    public ProductResponse getProduct(String productId) {
+        Product product = getProductById(productId);
+        Category category = getCategoryById(product.getCategoryId());
+        return convertResponse(getProductById(productId), category.getCategoryName(), "");
+    }
 
 
     @Override

@@ -16,4 +16,5 @@ public interface ProductService {
     ProductResponse updateProduct(ProductUpdateRequest productRequest);
     ProductResponse updateProductImage(String productId, MultipartFile image) throws IOException;
     ProductResponse deleteProduct(String productId);
+    ProductResponse getProduct(String productId);
 }
