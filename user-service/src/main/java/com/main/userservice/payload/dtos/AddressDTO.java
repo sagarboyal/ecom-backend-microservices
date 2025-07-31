@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddressDTO {
     private Long addressId;
+    private Long userId;
     private String street;
     private String building;
     private String city;

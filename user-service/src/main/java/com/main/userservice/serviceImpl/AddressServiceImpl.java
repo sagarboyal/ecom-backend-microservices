@@ -23,8 +23,8 @@ public class AddressServiceImpl implements AddressService {
     private final ModelMapper modelMapper;
 
     @Override
-    public AddressDTO saveAddress(AddressDTO addressDTO, User user) {
-        user = validateUser(user.getUserId());
+    public AddressDTO saveAddress(AddressDTO addressDTO) {
+        User user = validateUser(addressDTO.getUserId());
         Address address = modelMapper.map(addressDTO, Address.class);
         address.setUser(user);
         address = addressRepository.save(address);
@@ -39,17 +39,17 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDTO> getUserAddressList(User user) {
-        user = validateUser(user.getUserId());
+    public List<AddressDTO> getUserAddressList(Long userId) {
+        User user = validateUser(userId);
         return user.getAddresses().stream()
                 .map( address -> modelMapper.map(address, AddressDTO.class))
                 .toList();
     }
 
     @Override
-    public AddressDTO updateAddress(Long addressId, AddressDTO addressDTO) {
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
+    public AddressDTO updateAddress(AddressDTO addressDTO) {
+        Address address = addressRepository.findById(addressDTO.getAddressId())
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressDTO.getAddressId()));
 
         Optional.ofNullable(addressDTO.getStreet()).ifPresent(address::setStreet);
         Optional.ofNullable(addressDTO.getBuilding()).ifPresent(address::setBuilding);
