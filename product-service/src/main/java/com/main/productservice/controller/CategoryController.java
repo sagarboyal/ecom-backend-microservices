@@ -37,9 +37,9 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable String id) {
+    public ResponseEntity<String> deleteCategory(@PathVariable String id) {
         CategoryDTO data = categoryService.deleteCategoryById(id);
-        return ResponseEntity.ok(data);
+        return ResponseEntity.ok("category deleted successfully, with name: " + data.getCategoryName());
     }
 
     @PutMapping
