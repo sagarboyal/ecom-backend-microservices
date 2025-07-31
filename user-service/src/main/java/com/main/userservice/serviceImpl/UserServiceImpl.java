@@ -33,7 +33,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         User user = modelMapper.map(userRequest, User.class);
-        user.setRoles(Set.of(roleRepository.findByRoleName(Roles.ROLE_USER).get()));
+        Role role = roleRepository.findByRoleName(Roles.ROLE_USER)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "ROLE_USER", ""));
+        user.setRoles(Set.of(role));
         user = userRepository.save(user);
         return convertToUserResponse(user);
 
