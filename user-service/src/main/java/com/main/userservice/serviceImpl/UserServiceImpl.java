@@ -9,6 +9,7 @@ import com.main.userservice.payload.request.UserRequest;
 import com.main.userservice.payload.response.AddressResponse;
 import com.main.userservice.payload.response.PagedResponse;
 import com.main.userservice.payload.response.UserResponse;
+import com.main.userservice.repository.RoleRepository;
 import com.main.userservice.repository.UserRepository;
 import com.main.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,12 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final RoleRepository roleRepository;
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         User user = modelMapper.map(userRequest, User.class);
-        user.setRoles(Set.of(new Role(Roles.ROLE_USER)));
+        user.setRoles(Set.of(roleRepository.findByRoleName(Roles.ROLE_USER).get()));
         user = userRepository.save(user);
         return convertToUserResponse(user);
 
