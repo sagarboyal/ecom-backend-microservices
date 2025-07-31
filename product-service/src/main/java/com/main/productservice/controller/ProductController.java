@@ -73,17 +73,21 @@ public class ProductController {
     public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(request));
     }
+
     @PutMapping
     public ResponseEntity<ProductResponse> updateProduct(@RequestBody ProductUpdateRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(request));
     }
+
     @PutMapping("/{productId}/image")
     public ResponseEntity<ProductResponse> updateProductImage(@Valid @PathVariable String productId,
                                                          @RequestParam("image") MultipartFile image) throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductImage(productId, image));
     }
+
     @DeleteMapping("/{productId}")
-    public ResponseEntity<ProductResponse> deleteProduct(@PathVariable String productId) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productId));
+    public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
+        ProductResponse data = productService.deleteProduct(productId);
+        return ResponseEntity.status(HttpStatus.OK).body("product deleted successfully, with name: " + data.getProductName());
     }
 }
