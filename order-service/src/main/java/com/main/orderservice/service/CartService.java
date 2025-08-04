@@ -2,7 +2,6 @@ package com.main.orderservice.service;
 
 import com.main.orderservice.payloads.cart.CartDTO;
 import com.main.orderservice.payloads.cart.CartRequest;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
