@@ -1,6 +1,7 @@
 package com.main.orderservice.controller;
 
 import com.main.orderservice.payloads.cart.CartDTO;
+import com.main.orderservice.payloads.cart.CartRequest;
 import com.main.orderservice.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,33 +22,28 @@ public class CartController {
         return new ResponseEntity<>(cartDTOS, HttpStatus.FOUND);
     }
 
-    @GetMapping("/users/cart/{userId}")
+    @GetMapping("/user/cart/{userId}")
     public ResponseEntity<CartDTO> getUserCartsHandler(@PathVariable Long userId) {
         Long cartId = cartService.findUserCartId(userId);
         CartDTO cartDTO = cartService.getUserCart(userId, cartId);
         return new ResponseEntity<>(cartDTO, HttpStatus.FOUND);
     }
 
-    @PostMapping("/products/{productId}/quantity/{quantity}/user/{userId}")
-    public ResponseEntity<CartDTO> saveProductHandler(@PathVariable String productId,
-                                                      @PathVariable Integer quantity,
-                                                      @PathVariable Long userId) {
-        CartDTO data = cartService.addProductToCart(userId, productId, quantity);
+    @PostMapping("/products")
+    public ResponseEntity<CartDTO> saveProductHandler(@RequestBody CartRequest request) {
+        CartDTO data = cartService.addProductToCart(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(data);
     }
 
-    @PutMapping("/products/{productId}/quantity/{operation}/user/{userId}")
-    public ResponseEntity<CartDTO> updateProductHandler(@PathVariable String productId,
-                                                        @PathVariable String operation,
-                                                        @PathVariable Long userId) {
-        CartDTO cartDTO = cartService.updateProductQuantityInCart(userId, productId,
-                operation.equalsIgnoreCase("delete") ? -1 : 1);
+    @PutMapping("/products")
+    public ResponseEntity<CartDTO> updateProductHandler(@RequestBody CartRequest request) {
+        CartDTO cartDTO = cartService.updateProductQuantityInCart(request);
         return ResponseEntity.status(HttpStatus.OK).body(cartDTO);
     }
 
-    @DeleteMapping("/{cartId}/product/{productId}")
+    @DeleteMapping("/products/{productId}/cart/{cartId}")
     public ResponseEntity<String> deleteProductHandler(@PathVariable Long cartId,
                                                        @PathVariable String productId) {
         String status = cartService.deleteProductFromCart(cartId, productId);

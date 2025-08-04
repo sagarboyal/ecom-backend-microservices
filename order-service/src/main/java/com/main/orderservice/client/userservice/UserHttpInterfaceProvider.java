@@ -8,8 +8,10 @@ import org.springframework.web.service.annotation.HttpExchange;
 
 @HttpExchange
 public interface UserHttpInterfaceProvider {
-    @GetExchange("/api/user/{email}")
+    @GetExchange("/api/user/email/{email}")
     UserResponse getUserByEmailId(@PathVariable("email") String email);
     @GetExchange("/api/address/{addressId}")
     AddressResponse getAddressById(@PathVariable("addressId") Long addressId);
+    @GetExchange("/api/users/id/{id}")
+    UserResponse getUserById(@PathVariable("id") Long id);
 }
