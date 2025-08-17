@@ -9,3 +9,13 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/eureka-server/app.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7

@@ -27,5 +27,16 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
+logging:
+  level:
+    root: INFO
+    com.main.productservice: TRACE
+  file:
+    name: logs/product-service/app.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7
+
 project:
   images: images/

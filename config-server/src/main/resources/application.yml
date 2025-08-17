@@ -10,7 +10,7 @@ spring:
     config:
       server:
         native:
-          search-locations: file:///C:/MicroServices/ecom-microservices/config-server/src/main/resources/config
+          search-locations: ${SEARCH_PATH:file:///C:/Dev/Spring/microServices/e-commerce/config-server/src/main/resources/config}
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
@@ -23,3 +23,12 @@ management:
       exposure:
         include: ${ENDPOINT_EXPOSER:health,info}
 
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/config-server/app.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7

@@ -32,3 +32,14 @@ eureka:
       defaultZone: ${EUREKA_URL}
     register-with-eureka: true
     fetch-registry: true
+
+logging:
+  level:
+    root: INFO
+    com.main.orderservice: TRACE
+  file:
+    name: logs/order-service/app.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7
