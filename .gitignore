@@ -1,4 +1,4 @@
 .idea
 images/
 logs/
-additional/evaluate-loki/.data
+additional/grafana/evaluate-loki/.data

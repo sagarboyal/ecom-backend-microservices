@@ -11,7 +11,7 @@ services:
       - 7946
       - 9095
     volumes:
-      - ./loki-config.yaml:/etc/loki/config.yaml
+      - ./evaluate-loki/loki-config.yaml:/etc/loki/config.yaml
     depends_on:
       - minio
     healthcheck:
@@ -32,7 +32,7 @@ services:
       - 7946
       - 9095
     volumes:
-      - ./loki-config.yaml:/etc/loki/config.yaml
+      - ./evaluate-loki/loki-config.yaml:/etc/loki/config.yaml
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1" ]
       interval: 10s
@@ -46,7 +46,7 @@ services:
   alloy:
     image: grafana/alloy:latest
     volumes:
-      - ./alloy-local-config.yaml:/etc/alloy/config.alloy:ro
+      - ./evaluate-loki/alloy-local-config.yaml:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ../../logs:/logs-parent:ro
     command:  run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
@@ -74,12 +74,22 @@ services:
     ports:
       - 9000
     volumes:
-      - ./.data/minio:/data
+      - ./evaluate-loki/.data/minio:/data
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 15s
       timeout: 20s
       retries: 5
+    networks:
+      - loki
+
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./evaluate-prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - loki
 
@@ -122,7 +132,7 @@ services:
   backend:
     image: grafana/loki:latest
     volumes:
-      - ./loki-config.yaml:/etc/loki/config.yaml
+      - ./evaluate-loki/loki-config.yaml:/etc/loki/config.yaml
     ports:
       - "3100"
       - "7946"
