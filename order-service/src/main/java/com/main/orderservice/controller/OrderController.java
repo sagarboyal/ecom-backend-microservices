@@ -15,19 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
-    @PostMapping("/users/payments/{paymentMethod}/{email}")
-    public ResponseEntity<OrderDTO> orderProducts(@PathVariable String paymentMethod,
-                                                  @PathVariable String email,
-                                                  @RequestBody OrderRequestDTO orderRequestDTO) {
-        OrderDTO order = orderService.placeOrder(
-                email,
-                orderRequestDTO.getAddressId(),
-                paymentMethod,
-                orderRequestDTO.getPaymentGatewayName(),
-                orderRequestDTO.getPaymentGatewayId(),
-                orderRequestDTO.getPaymentGatewayStatus(),
-                orderRequestDTO.getPaymentGatewayResponseMessage()
-        );
+    @PostMapping("/place")
+    public ResponseEntity<OrderDTO> orderProducts(@RequestBody OrderRequestDTO orderRequestDTO) {
+        OrderDTO order = orderService.placeOrder(orderRequestDTO);
         return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
 }

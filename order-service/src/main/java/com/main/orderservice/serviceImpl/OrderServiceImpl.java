@@ -11,6 +11,7 @@ import com.main.orderservice.model.Order;
 import com.main.orderservice.model.OrderItem;
 import com.main.orderservice.payloads.order.OrderDTO;
 import com.main.orderservice.payloads.order.OrderItemDTO;
+import com.main.orderservice.payloads.order.OrderRequestDTO;
 import com.main.orderservice.payloads.payment.PaymentDTO;
 import com.main.orderservice.payloads.product.ProductResponse;
 import com.main.orderservice.payloads.product.ProductUpdateRequest;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -43,41 +43,35 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderDTO placeOrder(String emailId,
-                               Long addressId,
-                               String paymentMethod,
-                               String paymentGatewayName,
-                               String paymentGatewayId,
-                               String paymentGatewayStatus,
-                               String paymentGatewayResponseMessage) {
-
-        UserResponse user = userHttpInterfaceProvider.getUserByEmailId(emailId);
+    public OrderDTO placeOrder(OrderRequestDTO orderRequestDTO) {
+        UserResponse user = userHttpInterfaceProvider.getUserById(orderRequestDTO.getUserId());
         Cart cart = cartRepository.findCartByUserId(user.getUserId());
         if (cart == null) {
-            throw new ResourceNotFoundException("Cart", "email", emailId);
+            throw new ResourceNotFoundException("Cart", "email", user.getEmail());
         }
 
-        AddressResponse address = userHttpInterfaceProvider.getAddressById(addressId);
+        AddressResponse address = userHttpInterfaceProvider.getAddressById(orderRequestDTO.getAddressId());
 
         Order order = new Order();
-        order.setEmail(emailId);
+        order.setEmail(user.getEmail());
         order.setOrderDate(LocalDate.now());
         order.setTotalAmount(cart.getTotalPrice());
         order.setOrderStatus("Order Accepted !");
         order.setAddressId(address.getAddressId());
 
-        PaymentDTO paymentRequest = PaymentDTO.builder()
-                .paymentMethod(paymentMethod)
-                .paymentGatewayId(paymentGatewayId)
-                .paymentGatewayName(paymentGatewayName)
-                .paymentGatewayStatus(paymentGatewayStatus)
-                .paymentGatewayResponseMessage(paymentGatewayResponseMessage)
-                .build();
-
-        paymentRequest = paymentHttpInterfaceProvider.savePayment(order.getOrderId(), paymentRequest);
-        order.setPaymentId(paymentRequest.getPaymentId());
-
         Order savedOrder = orderRepository.save(order);
+
+        PaymentDTO paymentRequest = PaymentDTO.builder()
+                .paymentMethod(orderRequestDTO.getPaymentMethod())
+                .paymentGatewayId(orderRequestDTO.getPaymentGatewayId())
+                .paymentGatewayName(orderRequestDTO.getPaymentGatewayName())
+                .paymentGatewayStatus(orderRequestDTO.getPaymentGatewayStatus())
+                .paymentGatewayResponseMessage(orderRequestDTO.getPaymentGatewayResponseMessage())
+                .build();
+        paymentRequest = paymentHttpInterfaceProvider.savePayment(order.getOrderId(), paymentRequest);
+
+        savedOrder.setPaymentId(paymentRequest.getPaymentId());
+        savedOrder = orderRepository.save(order);
 
         List<CartItem> cartItems = cart.getCartItems();
         if (cartItems.isEmpty()) {
@@ -97,31 +91,26 @@ public class OrderServiceImpl implements OrderService {
 
         orderItems = orderItemRepository.saveAll(orderItems);
 
-
-        Iterator<CartItem> iterator = cart.getCartItems().iterator();
-        while (iterator.hasNext()) {
-            CartItem item = iterator.next();
+        List<CartItem> itemsToProcess = new ArrayList<>(cart.getCartItems());
+        for (CartItem item : itemsToProcess) {
             int quantity = item.getQuantity();
             ProductResponse product = productHttpInterfaceProvider.getProductById(item.getProductId());
-            product.setQuantity(product.getQuantity() - quantity);
-
             ProductUpdateRequest productRequest = ProductUpdateRequest.builder()
                     .productId(product.getProductId())
-                    .quantity(quantity)
+                    .quantity(product.getQuantity() - quantity)
                     .build();
             productHttpInterfaceProvider.updateProduct(productRequest);
-
-            iterator.remove();
-
-            cartService.deleteProductFromCart(cart.getCartId(), item.getProductId());
         }
+        cart.setTotalPrice(0.0);
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
 
         List<OrderItemDTO> orderItemDTOS =
                 orderItems.stream()
                         .map(this::convertToDTO)
-                                .toList();
+                        .toList();
         OrderDTO orderDTO = convertToOrderDTO(order, orderItemDTOS);
-        orderDTO.setAddressId(addressId);
+        orderDTO.setAddressId(orderDTO.getAddressId());
 
         return orderDTO;
     }
@@ -139,10 +128,11 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+
     private OrderItemDTO convertToDTO(OrderItem orderItem) {
         return OrderItemDTO.builder()
                 .orderItemId(orderItem.getOrderItemId())
-                .product(productHttpInterfaceProvider.getProductById(orderItem.getProductId()))
+                .productId(orderItem.getProductId())
                 .quantity(orderItem.getQuantity())
                 .discount(orderItem.getDiscount())
                 .orderedProductPrice(orderItem.getOrderedProductPrice())
