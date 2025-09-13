@@ -1,0 +1,30 @@
+server:
+  port: ${PORT:8080}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    hostname: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINT_EXPOSER:*}
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  file:
+    name: logs/gateway/app.log
+  level:
+    root: INFO
+
